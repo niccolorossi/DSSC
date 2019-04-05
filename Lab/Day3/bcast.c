@@ -37,10 +37,9 @@
 
 // Header file for compiling code including MPI APIs
 #include <mpi.h>
-#define N 1000000000/sizeof(int)
 
 int main( int argc, char * argv[] ){
-
+  int N = 1000000000;
   int rank = 0; // store the MPI identifier of the process
   int npes = 1; // store the number of MPI processes
   int *imesg = (int *)malloc(N * sizeof(int));
