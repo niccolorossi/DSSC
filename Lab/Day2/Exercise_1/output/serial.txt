@@ -1,4 +1,0 @@
-The result is 3.141593
-The computation took 0.195716 seconds
-cn02-02 : flushing filesystem cache...
-cn02-02 : filesystem cache flushed
