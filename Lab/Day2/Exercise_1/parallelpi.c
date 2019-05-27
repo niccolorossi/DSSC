@@ -36,6 +36,7 @@ int main(int argv, char* argc[])
   int nthreads=1;
   double b_time=omp_get_wtime();
 
+  // reduction
   #pragma omp parallel reduction(+:global_result)
   {
 
@@ -48,11 +49,33 @@ int main(int argv, char* argc[])
 
     global_result += local_sum(local_a,local_b,local_n,h);
   }
+ 
+
+  // critical and atomic
+  /*
+  #pragma omp parallel 
+  {
+    double local_result=0.0;
+    nthreads=omp_get_num_threads();
+    int tid=omp_get_thread_num();
+    int local_n=N/nthreads;
+    double h=(b-a)/N;
+    double local_a=a+tid*local_n*h;
+    double local_b=local_a+local_n*h;
+    
+    local_result = local_sum(local_a,local_b,local_n,h);
+    //#pragma omp critical
+    //global_result += local_result
+    #pragma omp atomic
+    global_result += local_result;
+  }
+  */
+
 
   double e_time = omp_get_wtime();
 
   //printf("The result is %lf\n",global_result);
   //printf("The computation took %lf seconds\n", e_time-b_time);
-  printf("%d %lf\n", nthreads, e_time-b_time);
+  printf("%d %lf %lf\n", nthreads, e_time-b_time, global_result);
   return 0;
 }
