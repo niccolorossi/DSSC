@@ -28,17 +28,54 @@ int main( int argc, char * argv[] ) {
   int i=0;
 
   #pragma omp parallel private(thread_id, i)
-    { 
+    {
     nthreads = omp_get_num_threads();
-    thread_id = omp_get_thread_num(); 
-            
+    thread_id = omp_get_thread_num();
+
+    // dynamic scheduling, chunks of size 10
     #pragma omp for schedule(dynamic,10)
       for( i = 0; i < N; i++ ){
         a[i]=thread_id;
-        }
-    } 
-  
-  print_usage(a, N, nthreads);                                                                                                                                                                                                                                                                               
+      }
+
+    // dynamic scheduling, chunks of size 1
+    /*
+    #pragma omp for schedule(dynamic,1)
+      for( i = 0; i < N; i++ ){
+        a[i]=thread_id;
+      }
+    */
+    // dynamic scheduling, default chunk size
+    /*
+    #pragma omp for schedule(dynamic)
+      for( i = 0; i < N; i++ ){
+        a[i]=thread_id;
+      }
+    */
+    // static scheduling, chunks of size 10
+    /*
+    #pragma omp for schedule(static,10)
+      for( i = 0; i < N; i++ ){
+        a[i]=thread_id;
+      }
+    */
+    // static scheduling, chunks of size 1
+    /*
+    #pragma omp for schedule(static,1)
+      for( i = 0; i < N; i++ ){
+        a[i]=thread_id;
+    }
+    */
+    // static scheduling, default chunk size
+    /*
+    #pragma omp for schedule(static)
+      for( i = 0; i < N; i++ ) {
+        a[i]=thread_id;
+      }
+    */
+    }
+
+  print_usage(a, N, nthreads);
 
   return 0;
 }
