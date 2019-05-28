@@ -36,7 +36,6 @@ int main( int argc, char * argv[] ) {
     #pragma omp for schedule(dynamic,10)
       for( i = 0; i < N; i++ ){
         a[i]=thread_id;
-      }
 
     // dynamic scheduling, chunks of size 1
     /*
@@ -73,7 +72,7 @@ int main( int argc, char * argv[] ) {
         a[i]=thread_id;
       }
     */
-    }
+  }
 
   print_usage(a, N, nthreads);
 

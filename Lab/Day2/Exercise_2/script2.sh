@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ~/PP/DSSC/Lab/Day2
+cd ~/PP/DSSC/Lab/Day2/Exercise_2
 
 module load intel
 
