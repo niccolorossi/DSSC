@@ -36,6 +36,13 @@ int main( int argc, char * argv[] ) {
       for( i = 0; i < N; i++ ){
         a[i]=thread_id;
         }
+
+    /*
+    #pragma omp for schedule(dynamic,10)
+      for( i = 0; i < N; i++ ){
+        a[i]=thread_id;
+      } 
+    */
     } 
   
   print_usage(a, N, nthreads);                                                                                                                                                                                                                                                                               
