@@ -1,7 +1,14 @@
-1	36.420626
-2	21.460866
-4	11.077018
-8	5.968388
-16	3.078800
-20	2.468695
-40	1.230769
+1	16.695278
+and the result is 3.141593
+2	8.355135
+and the result is 3.141593
+4	4.298033
+and the result is 3.141593
+8	2.304462
+and the result is 3.141593
+16	1.211679
+and the result is 3.141593
+20	0.960142
+and the result is 3.141593
+40	0.485058
+and the result is 3.141593

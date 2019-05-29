@@ -10,7 +10,7 @@ double f(double x)
 
 double local_sum(double local_a, double local_b, unsigned long long int local_n, double h)
 {
-  int i=0;
+  unsigned long long int i=0;
   double local_result=0.0;
   double x_i=0.0;
 
@@ -27,7 +27,7 @@ double local_sum(double local_a, double local_b, unsigned long long int local_n,
 
 int main(int argc, char * argv[])
 {
-  unsigned long long int N=10000000000/sizeof(int);
+  int N=1000000000;
   double a=0.0;
   double b=1.0;
   double global_result=0.0;
@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
   {
     t1 = MPI_Wtime();
   }  
-  unsigned long long int local_n = N/npes;
+  int local_n = N/npes;
   double h=(b-a)/N;
   double local_a=a+rank*local_n*h;
   double local_b=local_a+local_n*h;
@@ -51,28 +51,25 @@ int main(int argc, char * argv[])
   double ls = local_sum(local_a,local_b,local_n,h);
 
   MPI_Reduce(&ls,&global_result,1,MPI_DOUBLE,MPI_SUM,npes-1,MPI_COMM_WORLD);
-  /*
-  if(rank == npes-1)
-  {
-    printf("%f\n",global_result);
-  }
-  */
+  
   double t2;
+
   if(rank==0)
   {
     t2 = MPI_Wtime();
-    printf( "Elapsed time is %f\n", t2 - t1 );
+    printf( "%d\t%f\n", npes, t2 - t1 );
   }
-  if(rank == npes-1)
+  
+  if(npes > 1 && rank == npes-1)
   {
     MPI_Send(&global_result,1,MPI_DOUBLE,0,101,MPI_COMM_WORLD);
-    // printf("%f\n", global_result);
   }
-  if(rank == 0)
+  
+  if(npes > 1 && rank == 0)
   {
     MPI_Recv(&global_result,1,MPI_DOUBLE,npes-1,101,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
-    // printf("%f\n",global_result);
-  }
+    printf("and the result is %f\n",global_result);
+  } else if(rank == 0) printf("and the result is %f\n",global_result);
  
   MPI_Finalize();
   return 0;
