@@ -1,3 +1,0 @@
-The program ex3.c computes pi with the midpoint method. It was executed via script.sh, changing the number of processes
-from 1 to 40. time_npes.png is the scalability graph for our problem. It seems that this program is slower than its OpenMP
-counterpart from exercise 1, especially for low numbers of processes.
