@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-#define N 1000000000  // number of elements in the buffer
+#define N 10  // number of elements in the buffer
 
 int left(const int rank, const int npes) {
   return (npes+rank-1)%npes;
@@ -47,6 +47,7 @@ int main(int argc, char* argv[]) {
   MPI_Init( &argc, &argv );
   MPI_Comm_rank( MPI_COMM_WORLD, &rank );
   MPI_Comm_size( MPI_COMM_WORLD, &npes );
+  MPI_Request request;
 
   double ti = MPI_Wtime();
   int i=0;
@@ -56,33 +57,31 @@ int main(int argc, char* argv[]) {
                                           // it is the buffer sent around in the ring
 
   int* sum = (int*)malloc(N * sizeof(int));  // for each process, sum contains the vector sum of v and all the vectors sent around so far 
-  fill_vector(sum,rank);  
+  fill_vector(sum,0);  
 
   int* rec = (int*)malloc(N * sizeof(int)); // receiving buffer
 
-  for(i=0; i<npes-1; i++) { // at every loop iteration each process receives from left, updates sum, swaps v with rec so that at the next iteration 
-		            // the buffer passed to right process will contain current left proc rank
-    if(rank != 0) {
-      MPI_Recv(rec, N, MPI_INT, left(rank,npes), 101, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-      MPI_Send(v, N, MPI_INT, right(rank, npes), 101, MPI_COMM_WORLD);
-      vector_sum(sum,rec);
-      swap(&v,&rec);
-    } else {
-      MPI_Send(v, N, MPI_INT, right(rank,npes), 101, MPI_COMM_WORLD);
+  for(i=0; i<npes; i++) { // at every loop iteration each process sends v (initialized to rank) to right, and while at it
+		          // it updates its vector sum with its current v and receives left process' v in "rec",
+	                  // when these communications are done v and rec are swapped        
+
+      MPI_Isend(v, N, MPI_INT, right(rank,npes), 101, MPI_COMM_WORLD,&request);
+      vector_sum(sum,v);
       MPI_Recv(rec, N, MPI_INT, left(rank,npes), 101, MPI_COMM_WORLD,MPI_STATUS_IGNORE);
-      vector_sum(sum,rec);
+      MPI_Wait(&request,MPI_STATUS_IGNORE);
       swap(&v,&rec);
-    }
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
-  
   double tf = MPI_Wtime();
   if(!rank) {
     printf("elapsed time: %lf\n",tf-ti);
   }
 
+
+
   MPI_Finalize();
   free(v); free(rec); free(sum);
   return 0;
 }
+
