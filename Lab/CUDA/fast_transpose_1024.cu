@@ -1,13 +1,13 @@
 #include <stdio.h>
 #define N 1024
-#define NUM_BLOCKS 32
-#define SIDE_BLOCK N/NUM_BLOCKS
+#define BLOCK_DIM 32
+#define NUM_BLOCKS N/BLOCK_DIM
 
 __global__ void fast_transpose(const int* a, int* ta, int size) {
   int ix = blockIdx.x*blockDim.x + threadIdx.x;
   int iy = blockIdx.y*blockDim.y + threadIdx.y; 
 
-   __shared__ int tmp[SIDE_BLOCK][SIDE_BLOCK];
+   __shared__ int tmp[BLOCK_DIM][BLOCK_DIM];
 
   tmp[threadIdx.x][threadIdx.y] = a[ix*size + iy];
   __syncthreads();
@@ -47,10 +47,10 @@ int main() {
   cudaMalloc( (void**)&td_a, num_bytes );
 
   dim3 grid, block; 
-  block.x = NUM_BLOCKS;
-  block.y = NUM_BLOCKS;
-  grid.x = SIDE_BLOCK; 
-  grid.y = SIDE_BLOCK;
+  block.x = BLOCK_DIM;
+  block.y = BLOCK_DIM;
+  grid.x = NUM_BLOCKS; 
+  grid.y = NUM_BLOCKS;
 
   for(int i=0; i<N*N; i++)
     h_a[i] = i+1;
@@ -65,17 +65,9 @@ int main() {
 
   int c = check(th_a,h_a,N);
   printf("correctness: %d\n", c);
-  float elapsed_time = 0;
-  cudaEventElapsedTime(&elapsed_time, start, stop);
-  printf("elapsed time: %f\n", elapsed_time);
-
-  /*
-  for(int row=0; row<N; row++) { 
-    for(int col=0; col<N; col++) {
-      printf("%d ", th_a[row*N+col] ); printf("\n");
-    }
-  }
-  */
+  float milliseconds = 0;
+  cudaEventElapsedTime(&milliseconds, start, stop);
+  printf("elapsed time: %f\n", milliseconds);
 
   free( h_a ); free(th_a);
   cudaFree( d_a ); cudaFree(td_a);

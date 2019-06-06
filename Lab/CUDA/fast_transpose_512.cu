@@ -64,17 +64,11 @@ int main() {
 
   int c = check(th_a,h_a,N);
   printf("correctness: %d\n", c);
-  float elapsed_time = 0;
-  cudaEventElapsedTime(&elapsed_time, start, stop);
-  printf("elapsed time: %f\n", elapsed_time);
 
-  /*
-  for(int row=0; row<N; row++) { 
-    for(int col=0; col<N; col++) {
-      printf("%d ", th_a[row*N+col] ); printf("\n");
-    }
-  }
-  */
+  cudaEventSynchronize(stop);
+  float milliseconds = 0;
+  cudaEventElapsedTime(&milliseconds, start, stop);
+  printf("elapsed time: %f\n", milliseconds);
 
   free( h_a ); free(th_a);
   cudaFree( d_a ); cudaFree(td_a);

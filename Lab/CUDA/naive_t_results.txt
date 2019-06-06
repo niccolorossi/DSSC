@@ -1,0 +1,19 @@
+matrix size: 8192 x 8192
+block size: 32 x 32
+milliseconds: 10.517344
+
+matrix size: 8192 x 8192
+block size: 16 x 32
+milliseconds: 10.494848
+
+matrix size: 8192 x 8192
+block size: 16 x 16
+milliseconds: 10.032896
+
+matrix size: 8192 x 8192
+block size: 16 x 8
+milliseconds: 15.946688
+
+matrix size: 8192 x 8192
+block size: 8 x 8
+milliseconds: 11.720768

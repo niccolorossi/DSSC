@@ -1,18 +1,20 @@
 #include <stdio.h>
-#define N 64
-#define NUM_BLOCKS 8
-#define SIDE_BLOCK N/NUM_BLOCKS
+#define N 8192
+#define BLOCK_DIM_X 8
+#define BLOCK_DIM_Y 8
+#define NUM_BLOCKS_X N/BLOCK_DIM_X
+#define NUM_BLOCKS_Y N/BLOCK_DIM_Y
 
 __global__ void fast_transpose(const int* a, int* ta, int size) {
   int ix = blockIdx.x*blockDim.x + threadIdx.x;
   int iy = blockIdx.y*blockDim.y + threadIdx.y; 
 
-   __shared__ int tmp[SIDE_BLOCK][SIDE_BLOCK];
+   __shared__ int tmp[BLOCK_DIM_Y][BLOCK_DIM_X];
 
-  tmp[threadIdx.x][threadIdx.y] = a[ix*size + iy];
+  tmp[threadIdx.y][threadIdx.x] = a[ix*size + iy];
   __syncthreads();
 
-  ta[iy*size + ix] = tmp[threadIdx.x][threadIdx.y];
+  ta[iy*size + ix] = tmp[threadIdx.y][threadIdx.x];
 
 }
 
@@ -28,6 +30,7 @@ int check(const int* a, const int* ta, const int size) {
   if(k==size*size) return 1;
   else return 0;
 }
+
 
 
 int main() {
@@ -46,10 +49,10 @@ int main() {
   cudaMalloc( (void**)&td_a, num_bytes );
 
   dim3 grid, block; 
-  block.x = NUM_BLOCKS;
-  block.y = NUM_BLOCKS;
-  grid.x = SIDE_BLOCK; 
-  grid.y = SIDE_BLOCK;
+  block.x = BLOCK_DIM_X;
+  block.y = BLOCK_DIM_Y;
+  grid.x = NUM_BLOCKS_X; 
+  grid.y = NUM_BLOCKS_Y;
 
   for(int i=0; i<N*N; i++)
     h_a[i] = i+1;
@@ -74,3 +77,4 @@ int main() {
 
   return 0;
 }
+
