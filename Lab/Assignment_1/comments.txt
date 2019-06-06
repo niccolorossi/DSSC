@@ -1,0 +1,7 @@
+script1.sh contains the details concerning compilation and execution of the file parallelpi.c.
+In the main I've written the code for reduction, critical and atomical pragmas (two of them are currently commented)
+In the files scalabilityc.txt, scalabilitya.txt and scalabilityr.txt there are the results of three tests, where each
+time a different pragma has been employed (critical, atomic and reduction respectively)
+comparison.png graphs time vs. number of threads for the three files
+It seems that atomic and reduction yield similar results, while critical (arguably the slowest of these methods) does
+not scale very well, as the case num threads = 20 is way slower than what we get with atomic and reduction.

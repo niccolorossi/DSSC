@@ -1,0 +1,14 @@
+1	6.124026
+and the result is 3.141593
+2	3.070618
+and the result is 3.141593
+4	1.588493
+and the result is 3.141593
+8	0.869959
+and the result is 3.141593
+16	0.444325
+and the result is 3.141593
+20	0.355352
+and the result is 3.141593
+40	0.201786
+and the result is 3.141593
