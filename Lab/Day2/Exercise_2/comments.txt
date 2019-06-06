@@ -1,8 +1,0 @@
-The file loop_schedule.c has been executed with script2.sh. The results of the various tests are collected in the folder "output".
-Different scheduling leads to different values for the elements of the array, and in turn, via print_usage, to different figures in the output.
-
-Dynamic scheduling consists in assigning chunks of specified size to threads off a queue until all iterations have been handled. That is, as a 
-thread finishes one chunk it immediately works on the next one available. Not specifying the chunk size is equal to setting it 1.
-We can see that the asterisks do not follow a pattern, and when size=10 they are randomly scattered in groups of 10.
-On the contrary, in static scheduling iterations are divided evenly across threads (every thread does 1/num thread of the work) and the assignments are
-specified before the execution, hence the regular patterns followed by asterisks. Not specifying a size is equal to taking chunks of size N/nthreads.
