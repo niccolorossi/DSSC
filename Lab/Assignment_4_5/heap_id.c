@@ -4,24 +4,21 @@
 
 #define N 10  // matrix dimension
 
-void print_matrix(int A[][N], int rows) {
+void print_matrix(int* A, int rows) {
   size_t i,j=0;
   for(i=0; i<rows; i++) {
     for(j=0; j<N; j++) {
-      fprintf(stdout, "%d\t", A[i][j]);
+      fprintf(stdout, "%d\t", *(A+j+i*N));
     }
     fprintf(stdout, "\n");
   }
 }
 
-void copy(int m1[][N], int m2[][N], int rows)
+void swap(int** a, int** b)
 {
-  size_t i,j=0;
-  for(i=0; i<rows; i++) {
-    for(j=0; j<N; j++) {
-      m1[i][j] = m2[i][j];
-    }
-  }
+  int* t = *a;
+  *a = *b;
+  *b = t;
 }
 
 
@@ -42,7 +39,7 @@ int main(int argc, char* argv[])
 
   if(rank < REST) N_LOC++;
 
-  int mat[N_LOC][N];
+  int* mat =(int*)malloc(N*N_LOC*sizeof(int));
 
   if(rank < REST) {
     gap = rank*N_LOC;
@@ -52,14 +49,15 @@ int main(int argc, char* argv[])
 
   for(i=0; i<N_LOC; i++) {
     for(j=0; j<N; j++) {
-      if (j == i+gap) mat[i][j] = 1;
-      else mat[i][j] = 0;
+      if (j == i+gap) *(mat+j+i*N) = 1;
+      else *(mat+j+i*N) = 0;
     }
   }
 
   if(!rank) {
 
-    int buf[N_LOC][N];
+    int* buf = (int*)malloc(N*N_LOC*sizeof(int));
+
     MPI_Request request;
 
     if(REST) {
@@ -67,19 +65,19 @@ int main(int argc, char* argv[])
 	MPI_Irecv(buf,N_LOC*N,MPI_INT,i,101,MPI_COMM_WORLD,&request);
 	print_matrix(mat,N_LOC);
 	MPI_Wait(&request,MPI_STATUS_IGNORE);
-	copy(mat,buf,N_LOC);
+	swap(&mat,&buf);
       }
 
       MPI_Irecv(buf,(N_LOC-1)*N,MPI_INT,REST,101,MPI_COMM_WORLD,&request);
       print_matrix(mat,N_LOC);
       MPI_Wait(&request,MPI_STATUS_IGNORE);
-      copy(mat,buf,N_LOC-1);
+      swap(&mat,&buf);
 
       for(i=REST+1; i<npes; i++) {
 	MPI_Irecv(buf,(N_LOC-1)*N,MPI_INT,i,101,MPI_COMM_WORLD,&request);
 	print_matrix(mat,N_LOC-1);
 	MPI_Wait(&request,MPI_STATUS_IGNORE);
-	copy(mat,buf,N_LOC-1);
+	swap(&mat,&buf);
       }
       print_matrix(mat,N_LOC-1);
     } 
@@ -89,7 +87,7 @@ int main(int argc, char* argv[])
         MPI_Irecv(buf,N_LOC*N,MPI_INT,i,101,MPI_COMM_WORLD,&request);
         print_matrix(mat,N_LOC);
 	MPI_Wait(&request,MPI_STATUS_IGNORE);
-	copy(mat,buf,N_LOC);
+	swap(&mat,&buf);
       }
       print_matrix(mat,N_LOC);
     }
