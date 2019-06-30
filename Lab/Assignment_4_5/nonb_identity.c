@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
   int rank = 0; // store the MPI identifier of the process
   int npes = 1; // store the number of MPI processes
 
-  MPI_Init( &argc, &argv );
+  MPI_Init(&argc, &argv);
   MPI_Comm_rank( MPI_COMM_WORLD, &rank );
   MPI_Comm_size( MPI_COMM_WORLD, &npes );
   
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
       }
       print_matrix(mat,N_LOC, fp);
     }
-
+    free(buf);
   }
 
   else {
@@ -103,5 +103,7 @@ int main(int argc, char* argv[])
 
 
   MPI_Finalize();
+
+  free(mat);
   return 0;
 }
