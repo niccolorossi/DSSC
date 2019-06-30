@@ -2,15 +2,15 @@
 #include <stdio.h>
 #include <mpi.h>
 
-#define N 10  // matrix dimension
+#define N 10 // matrix dimension
 
-void print_matrix(int* A, int rows) {
+void print_matrix(int* A, int rows, FILE* p) {
   size_t i,j=0;
   for(i=0; i<rows; i++) {
     for(j=0; j<N; j++) {
-      fprintf(stdout, "%d\t", *(A+j+i*N));
+      fprintf(p, "%d\t", *(A+j+i*N));
     }
-    fprintf(stdout, "\n");
+    fprintf(p, "\n");
   }
 }
 
@@ -56,6 +56,9 @@ int main(int argc, char* argv[])
 
   if(!rank) {
 
+    FILE* fp = fopen("matrix.bin", "wb");
+    if (N < 10) fp = stdout;
+
     int* buf = (int*)malloc(N*N_LOC*sizeof(int));
 
     MPI_Request request;
@@ -63,33 +66,33 @@ int main(int argc, char* argv[])
     if(REST) {
       for(i=1; i<REST; i++) {
 	MPI_Irecv(buf,N_LOC*N,MPI_INT,i,101,MPI_COMM_WORLD,&request);
-	print_matrix(mat,N_LOC);
+	print_matrix(mat,N_LOC, fp);
 	MPI_Wait(&request,MPI_STATUS_IGNORE);
 	swap(&mat,&buf);
       }
 
       MPI_Irecv(buf,(N_LOC-1)*N,MPI_INT,REST,101,MPI_COMM_WORLD,&request);
-      print_matrix(mat,N_LOC);
+      print_matrix(mat,N_LOC, fp);
       MPI_Wait(&request,MPI_STATUS_IGNORE);
       swap(&mat,&buf);
 
       for(i=REST+1; i<npes; i++) {
 	MPI_Irecv(buf,(N_LOC-1)*N,MPI_INT,i,101,MPI_COMM_WORLD,&request);
-	print_matrix(mat,N_LOC-1);
+	print_matrix(mat,N_LOC-1, fp);
 	MPI_Wait(&request,MPI_STATUS_IGNORE);
 	swap(&mat,&buf);
       }
-      print_matrix(mat,N_LOC-1);
+      print_matrix(mat,N_LOC-1, fp);
     } 
   
     else {
       for(i=1; i<npes; i++) {
         MPI_Irecv(buf,N_LOC*N,MPI_INT,i,101,MPI_COMM_WORLD,&request);
-        print_matrix(mat,N_LOC);
+        print_matrix(mat,N_LOC, fp);
 	MPI_Wait(&request,MPI_STATUS_IGNORE);
 	swap(&mat,&buf);
       }
-      print_matrix(mat,N_LOC);
+      print_matrix(mat,N_LOC, fp);
     }
 
   }
