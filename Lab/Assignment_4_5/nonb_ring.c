@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-#define N 10  // number of elements in the buffer
+#define N 10000000  // number of elements in the buffer
 
 int left(const int rank, const int npes) {
   return (npes+rank-1)%npes;
