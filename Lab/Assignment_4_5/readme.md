@@ -18,5 +18,4 @@ every process at each iteration sends a buffer to its "rightmost" and receives o
 To compile the files (with "mpicc nonb_ring.c" and "mpicc ring.c") the module impi-trial/5.0.1.035 is needed. 
 
 The programs are executed with "mpirun -np {num procs} ./a.out" and the root process (0) prints the elapsed time during
-execution: as expected, for buffers of dimension 10E9 and with four processes the time difference is huge in favour of 
-nonb_ring.c.
+execution: as expected, running the executables on a Ulysses computing node with 20 processors and buffers of dimension 10E7 yields much better result for the overlapping code (time goes down from 4.45 to 2.51 seconds).
